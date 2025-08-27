@@ -93,7 +93,7 @@ const Navbar = () => {
           className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${
             isScrolled ? "text-black" : "text-white"
           } transition-all`}
-          onClick={() => navigate("/hote-admin")}
+          onClick={() => navigate("/hotel-admin")}
         >
           Dashboard
         </button>
@@ -115,7 +115,7 @@ const Navbar = () => {
               <UserButton.Action
                 label="My Bookings"
                 labelIcon={<BookIcon />}
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/my-bookings")}
               />
             </UserButton.MenuItems>
           </UserButton>
@@ -139,7 +139,7 @@ const Navbar = () => {
               <UserButton.Action
                 label="My Bookings"
                 labelIcon={<BookIcon />}
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/my-bookings")}
               />
             </UserButton.MenuItems>
           </UserButton>
