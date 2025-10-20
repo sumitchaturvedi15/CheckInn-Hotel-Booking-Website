@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import checkinn from "../assets/CheckInn.svg";
 import { assets } from "../assets/assets";
-import { useClerk, useUser, UserButton } from "@clerk/clerk-react";
+import { useClerk, UserButton } from "@clerk/clerk-react";
+import { useAppContext } from "../context/AppContext";
 
 const BookIcon = () => (
   <svg
@@ -35,18 +36,20 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const { openSignIn } = useClerk();
-  const { user } = useUser();
-  const navigate = useNavigate();
+  // const { user } = useUser();
+  // const navigate = useNavigate();
   const location = useLocation();
+
+  const { user, navigate, isAdmin, setShowHotelReg } = useAppContext();
+
   useEffect(() => {
-    if(location.pathname!=='/'){
-        setIsScrolled(true);
-        return;
+    if (location.pathname !== "/") {
+      setIsScrolled(true);
+      return;
+    } else {
+      setIsScrolled(false);
     }
-    else{
-        setIsScrolled(false);
-    }
-    setIsScrolled(prev => location.pathname!=='/' ? true:prev);
+    setIsScrolled((prev) => (location.pathname !== "/" ? true : prev));
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
@@ -89,14 +92,16 @@ const Navbar = () => {
             />
           </a>
         ))}
-        <button
-          className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${
-            isScrolled ? "text-black" : "text-white"
-          } transition-all`}
-          onClick={() => navigate("/hotel-admin")}
-        >
-          Dashboard
-        </button>
+        {user && (
+          <button
+            className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${
+              isScrolled ? "text-black" : "text-white"
+            } transition-all`}
+            onClick={() => isAdmin ? navigate("/admin/hotel-admin"): setShowHotelReg(true)}
+          >
+            {isAdmin ? 'Dashboard' : 'List Your Hotel'}
+          </button>
+        )}
       </div>
 
       {/* Desktop Right */}
@@ -176,9 +181,9 @@ const Navbar = () => {
         {user && (
           <button
             className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all"
-            onClick={() => navigate("/hote-admin")}
+            onClick={() => isAdmin ? navigate("/admin/hotel-admin"): setShowHotelReg(true)}
           >
-            Dashboard
+            {isAdmin ? 'Dashboard' : 'List Your Hotel'}
           </button>
         )}
 
