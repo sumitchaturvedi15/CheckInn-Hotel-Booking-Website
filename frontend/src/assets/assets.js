@@ -1,4 +1,4 @@
-import logo from './Checkinn.svg'
+import logo from './CheckInn.svg'
 import searchIcon from './searchIcon.svg'
 import userIcon from './userIcon.svg'
 import calenderIcon from './calenderIcon.svg'
