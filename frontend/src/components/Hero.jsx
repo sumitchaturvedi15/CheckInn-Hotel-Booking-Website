@@ -1,7 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import { assets, cities } from "../assets/assets";
-
+import { useAppContext } from "../context/AppContext";
 const Hero = () => {
+  const {navigate, getToken, axios, setSearchCities} = useAppContext();
+  const [destination, setDestination] = useState("");
+  const onSearch = async (e)=>{
+    e.preventDefault();
+    navigate(`/rooms?destination=${destination}`);
+    await axios.post('/api/user/storeSearchCity', {recentSearchCities : destination},{
+      headers: { Authorization: `Bearer ${await getToken()}` }
+    });
+    setSearchCities((prevSearchedCities=[])=>{
+      const updatedCities = [...prevSearchedCities, destination];
+      if(updatedCities.length >3){
+        updatedCities.shift();
+      }
+      return updatedCities;
+    })
+  }
   return (
     <div className='flex flex-col items-end justify-normal px-6 md:px-16 lg:px-24 xl:px-32 text-white bg-[url("/src/assets/heroImage.png")] bg-no-repeat bg-cover bg-center h-screen'>
       <p className="bg-[#49B9FF]/50 px-3.5 py-1 rounded-full mt-50 drop-shadow-[1px_1px_0px_black]">
@@ -15,13 +31,15 @@ const Hero = () => {
         peace of mind knowing your trip is already taken care of.
       </p>
 
-      <form className="bg-white text-gray-500 rounded-lg px-6 py-4 mt-8 flex flex-col md:flex-row max-md:items-start gap-4 max-md:mx-auto drop-shadow-[2px_2px_2px_black]">
+      <form onSubmit={onSearch} className="bg-white text-gray-500 rounded-lg px-6 py-4 mt-8 flex flex-col md:flex-row max-md:items-start gap-4 max-md:mx-auto drop-shadow-[2px_2px_2px_black]">
         <div>
           <div className="flex items-center gap-2">
             <img src={assets.calenderIcon} alt="" className="h-4"/>
             <label htmlFor="destinationInput">Destination</label>
           </div>
           <input
+            onChange={e=> setDestination(e.target.value)}
+            value={destination}
             list="destinations"
             id="destinationInput"
             type="text"

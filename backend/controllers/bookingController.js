@@ -28,34 +28,41 @@ export const checkAvailabilityAPI=async(req,res)=>{
     }
 }
 
-export const createBooking=async(req,res)=>{
-    try{
-        const {room, hotel, checkInDate, checkOutDate, guests}=req.body;
-        const user=req.user._id;
-        const isAvailable=await checkAvailability({room, checkInDate, checkOutDate});
-        if(!isAvailable) return res.json({success:false, message: "Room not available for the selected dates"});
-        const roomData=await Room.findById(room).populate("hotel");
-        let totalPrice=roomData.pricePerNight;
-        const checkIN=new Date(checkInDate);
-        const checkOUT=new Date(checkOutDate);
-        const timeDiff=checkOutDate.getTime()-checkInDate.getTime();
-        const nights=Math.ceil(timeDiff/(1000*3600*24));
-        totalPrice=totalPrice*nights;
-        const booking =await Booking.create({
-            user,
-            room,
-            hotel:roomData.hotel._id,
-            guests:+guests,
-            checkInDate,
-            checkOutDate,
-            totalPrice
-        })
-        res.json({success:true, message: "Booking created successfully"});//payment integration later
-    }
-    catch(err){
-        res.json({success:false, message: err.message});
-    }
-}
+export const createBooking = async (req, res) => {
+  try {
+    const { room, hotel, checkInDate, checkOutDate, guests } = req.body;
+    const user = req.user._id;
+
+    const isAvailable = await checkAvailability({ room, checkInDate, checkOutDate });
+    if (!isAvailable)
+      return res.json({ success: false, message: "Room not available for the selected dates" });
+
+    const roomData = await Room.findById(room).populate("hotel");
+
+    const checkIN = new Date(checkInDate);
+    const checkOUT = new Date(checkOutDate);
+
+    const timeDiff = checkOUT.getTime() - checkIN.getTime();
+    const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+    const totalPrice = roomData.pricePerNight * nights;
+
+    const booking = await Booking.create({
+      user,
+      room,
+      hotel: roomData.hotel._id,
+      guests: +guests,
+      checkInDate,
+      checkOutDate,
+      totalPrice,
+    });
+
+    res.json({ success: true, message: "Booking created successfully" });
+  } catch (err) {
+    res.json({ success: false, message: err.message });
+  }
+};
+
 
 export const getUserBookings=async(req,res)=>{
     try{

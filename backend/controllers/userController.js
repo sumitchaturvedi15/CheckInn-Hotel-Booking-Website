@@ -9,21 +9,27 @@ export const getUserData=async (req,res)=>{
     }
 }
 
-export const storeSearchCity=async(req,res)=>{
-    try{
-        const {recentSearchCities}=req.body;
-        const user=await req.user;
-        if(user.recentSearchCities.lenght<3){
-            user.recentSearchCities.push(recentSearchCities);
-        }
-        else{
-            user.recentSearchCities.shift();
-            user.recentSearchCities.push(recentSearchCities);
-        }
-        await user.save();
-        res.json({success:true, message: "City added to recent searches"});
+export const storeSearchCity = async (req, res) => {
+  try {
+    const { recentSearchCities } = req.body;
+    const user = req.user;
+
+    if (!user || !recentSearchCities) {
+      return res.json({ success: false, message: "Invalid user or data" });
     }
-    catch(err){
-        res.json({success:false ,message: err.message});
+
+    if (!user.recentSearchCities) user.recentSearchCities = [];
+
+    if (user.recentSearchCities.length < 3) {
+      user.recentSearchCities.push(recentSearchCities);
+    } else {
+      user.recentSearchCities.shift();
+      user.recentSearchCities.push(recentSearchCities);
     }
-}
+
+    await user.save();
+    res.json({ success: true, message: "City added to recent searches" });
+  } catch (err) {
+    res.json({ success: false, message: err.message });
+  }
+};

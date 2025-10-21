@@ -20,12 +20,12 @@ export const AppProvider = ({ children }) => {
   const fetchRooms = async () => {
     try {
       const { data } = await axios.get("/api/rooms");
-      if (data.success) {
+      if (data?.success && Array.isArray(data?.rooms)) {
         const formattedRooms = data.rooms.map((room) => ({
           ...room,
           images: Array.isArray(room.images[0])
             ? room.images.flat()
-            : room.images,
+            : room.images || [],
         }));
         setRooms(formattedRooms);
       } else {
@@ -33,6 +33,7 @@ export const AppProvider = ({ children }) => {
       }
     } catch (error) {
       toast.error(error.message);
+      setRooms([]);
     }
   };
 
